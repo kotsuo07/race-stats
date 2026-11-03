@@ -1,0 +1,53 @@
+name: boat-data
+
+on:
+  schedule:
+    - cron: "17 21 * * *" # JST 6:17 前日〜3日前の成績を取得
+  workflow_dispatch:
+    inputs:
+      start: {description: "開始日 YYYY-MM-DD", required: false}
+      end: {description: "終了日 YYYY-MM-DD", required: false}
+  push:
+    branches: [main]
+    paths: ["config/backfill.txt"]
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: sudo apt-get install -y -q lhasa >/dev/null
+      - name: Fetch
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            read START END < config/backfill.txt
+            python scripts/boat_fetch.py "$START" "$END"
+          elif [ -n "${{ inputs.start }}" ]; then
+            python scripts/boat_fetch.py "${{ inputs.start }}" "${{ inputs.end }}"
+          else
+            python scripts/boat_fetch.py --recent 3
+          fi
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git commit -m "data: ボートレース成績を更新" || exit 0
+          for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done
+      - name: Trigger site build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({owner: context.repo.owner, repo: context.repo.repo,
+              workflow_id: 'site.yml', ref: 'main'}).catch(e => core.warning('site.yml not found: ' + e.message))
