@@ -1,0 +1,18 @@
+{% macro course_table(rows) %}
+<table><thead><tr><th>進入</th><th class="num">1着率</th><th class="num">2連対率</th><th class="num">3連対率</th><th class="num">件数</th></tr></thead><tbody>
+{% for c in rows %}<tr><td>{{ c.course }}コース</td><td class="num">{{ f1(c.win) }}%</td><td class="num">{{ f1(c.top2) }}%</td><td class="num">{{ f1(c.top3) }}%</td><td class="num">{{ "{:,}".format(c.n) }}</td></tr>{% endfor %}
+</tbody></table>
+{% endmacro %}
+{% macro kimarite_table(k) %}
+<table><thead><tr>{% for name in k %}<th class="num">{{ name }}</th>{% endfor %}</tr></thead><tbody><tr>
+{% for name, v in k.items() %}<td class="num">{{ f1(v) }}%</td>{% endfor %}</tr></tbody></table>
+{% endmacro %}
+{% macro payout_table(p) %}
+<table><tbody>
+<tr><th>3連単の平均配当</th><td class="num">{{ "{:,}".format(p.tri_mean) }}円</td></tr>
+<tr><th>3連単の中央値</th><td class="num">{{ "{:,}".format(p.tri_median) }}円</td></tr>
+<tr><th>万舟率(1万円以上)</th><td class="num">{{ f1(p.manshu_pct) }}%</td></tr>
+<tr><th>3連単1番人気の的中率</th><td class="num">{{ f1(p.tri_pop1_pct) }}%</td></tr>
+<tr><th>集計レース数</th><td class="num">{{ "{:,}".format(p.tri_n) }}</td></tr>
+</tbody></table>
+{% endmacro %}

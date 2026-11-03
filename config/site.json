@@ -1,0 +1,9 @@
+{
+  "name": "レースデータ帳",
+  "tagline": "ボートレースの公式成績を集計。コース別1着率・決まり手・配当を場ごとに毎日更新",
+  "description": "ボートレース全24場の公式成績を自動集計。進入コース別の1着率・2連対率・3連対率、決まり手、3連単の平均配当と万舟率を場ごとに毎日更新しています。",
+  "site_url": "https://kotsuo07.github.io/race-stats",
+  "base_path": "/race-stats",
+  "operator": "kotsuo07",
+  "lang": "ja"
+}

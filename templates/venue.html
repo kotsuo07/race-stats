@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_tables.html" import course_table, kimarite_table, payout_table %}
+{% block content %}
+<h1>{{ v.name }}ボートレースのデータ:コース別1着率・決まり手・配当</h1>
+<p class="meta">直近1年={{ s.year_since }}〜{{ s.last_date }}({{ "{:,}".format(v.year_races) }}レース) / 全期間={{ s.first_date }}〜({{ "{:,}".format(v.all_races) }}レース)。毎朝自動更新。</p>
+{% if v.year_races %}
+<div class="tiles">
+  <div class="tile"><div class="lbl">1コース1着率(直近1年)</div><div class="big">{{ f1(v.year.courses[0].win) }}%</div><div class="sub">全国 {{ f1(s.national.year.courses[0].win) }}% / 全24場中{{ rank }}位</div></div>
+  <div class="tile"><div class="lbl">万舟率(直近1年)</div><div class="big">{{ f1(v.year.payout.manshu_pct) }}%</div><div class="sub">全国 {{ f1(s.national.year.payout.manshu_pct) }}%</div></div>
+  <div class="tile"><div class="lbl">3連単の中央値(直近1年)</div><div class="big">{{ "{:,}".format(v.year.payout.tri_median) }}円</div><div class="sub">全国 {{ "{:,}".format(s.national.year.payout.tri_median) }}円</div></div>
+</div>
+<h2>{{ v.name }}の進入コース別成績(直近1年)</h2>
+{{ course_table(v.year.courses) }}
+<h2>{{ v.name }}の決まり手(直近1年)</h2>
+{{ kimarite_table(v.year.kimarite) }}
+<h2>{{ v.name }}の配当(直近1年)</h2>
+{{ payout_table(v.year.payout) }}
+<h2>風速別の1コース1着率(直近1年)</h2>
+<table><thead><tr><th>風速</th><th class="num">1コース1着率</th><th class="num">レース数</th></tr></thead><tbody>
+{% for w in v.year.wind %}<tr><td>{{ w.wind }}</td><td class="num">{{ f1(w.c1_win) }}%</td><td class="num">{{ "{:,}".format(w.races) }}</td></tr>{% endfor %}
+</tbody></table>
+<p class="note">レース数が少ない区分は、偶然のぶれが大きい点に注意してください。</p>
+<h2>1コース1着率の推移(月別)</h2>
+{{ chart | safe }}
+<h2>{{ v.name }}の進入コース別成績(全期間)</h2>
+{{ course_table(v.all.courses) }}
+{% else %}
+<p>集計期間内のデータがありません。</p>
+{% endif %}
+<h2>ほかの場</h2>
+<p>{% for j, n in venues %}<a href="{{ u('/boat/venue/' ~ j ~ '/') }}">{{ n }}</a>{% if not loop.last %} / {% endif %}{% endfor %}</p>
+{% endblock %}

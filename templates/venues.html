@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>ボートレース場別データ一覧</h1>
+<p class="meta">直近1年={{ s.year_since }}〜{{ s.last_date }}</p>
+<table><thead><tr><th>場</th><th class="num">1コース1着率</th><th class="num">万舟率</th><th class="num">3連単中央値</th><th class="num">レース数</th></tr></thead><tbody>
+{% for j, v in rows %}<tr><td><a href="{{ u('/boat/venue/' ~ j ~ '/') }}">{{ v.name }}</a></td><td class="num">{{ f1(v.year.courses[0].win) }}%</td><td class="num">{{ f1(v.year.payout.manshu_pct) }}%</td><td class="num">{{ "{:,}".format(v.year.payout.tri_median) if v.year.payout else "—" }}円</td><td class="num">{{ "{:,}".format(v.year_races) }}</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}
