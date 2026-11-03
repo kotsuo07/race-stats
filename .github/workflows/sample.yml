@@ -1,0 +1,18 @@
+name: fetch-sample
+on:
+  push:
+    branches: [main]
+    paths: ["scripts/fetch_sample.sh", ".github/workflows/sample.yml"]
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y -q lhasa >/dev/null
+      - run: bash scripts/fetch_sample.sh > sample_log.txt 2>&1 || true
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sample sample_log.txt && git commit -m "サンプル取得" && git push
