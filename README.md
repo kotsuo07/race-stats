@@ -4,3 +4,5 @@
 
 - サイト: https://kotsuo07.github.io/race-stats/
 - 運用ルール: CLAUDE.md
+
+公式データ: ボートレース公式サイトの競走成績ファイル
